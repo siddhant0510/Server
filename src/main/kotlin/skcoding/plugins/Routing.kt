@@ -1,5 +1,6 @@
 package Server.skcoding.plugins
 
+import Server.skcoding.routes.createPostRoute
 import Server.skcoding.routes.followUser
 import Server.skcoding.routes.loginUser
 import Server.skcoding.routes.unfollowUser
@@ -18,5 +19,8 @@ fun Application.configureRouting() {
         // Following routes
         followUser()
         unfollowUser()
+
+        // Post routes
+        createPostRoute()
     }
 }
