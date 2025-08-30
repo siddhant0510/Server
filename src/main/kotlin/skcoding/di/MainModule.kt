@@ -2,8 +2,11 @@ package Server.skcoding.di
 
 import Server.skcoding.data.repository.follow.FollowRepository
 import Server.skcoding.data.repository.follow.FollowRepositoryImpl
+import Server.skcoding.data.repository.post.PostRepository
+import Server.skcoding.data.repository.post.PostRepositoryImpl
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.repository.user.UserRepositoryImpl
+import Server.skcoding.service.UserService
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -31,4 +34,9 @@ val mainModule = module {
     single<FollowRepository>{
         FollowRepositoryImpl(get())
     }
+    single<PostRepository> {
+        PostRepositoryImpl(get())
+    }
+
+    single { UserService(get()) }
 }
