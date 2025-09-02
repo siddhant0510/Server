@@ -3,6 +3,7 @@ package Server.skcoding.service
 import Server.skcoding.data.models.User
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.requests.CreateAccountRequest
+import Server.skcoding.data.requests.LoginRequest
 import Server.skcoding.data.responses.BasicApiResponse
 import Server.skcoding.util.ApiResponseMessages.FIELDS_BLANK
 import io.ktor.server.response.respond
@@ -12,6 +13,17 @@ class UserService(
 ) {
     suspend fun doesUserWithEmailExist(email: String): Boolean {
         return repository.getUserByEmail(email) != null
+    }
+
+    suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
+        return repository.doesEmailBelongToUserId(email, userId)
+    }
+
+    suspend fun doesPasswordMatchForUser(request: LoginRequest): Boolean {
+        return repository.doesPasswordForUserMatch(
+            email = request.email,
+            enteredPassword = request.password
+        )
     }
 
     suspend fun createUser(request: CreateAccountRequest) {

@@ -6,6 +6,8 @@ import Server.skcoding.data.repository.post.PostRepository
 import Server.skcoding.data.repository.post.PostRepositoryImpl
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.repository.user.UserRepositoryImpl
+import Server.skcoding.service.FollowService
+import Server.skcoding.service.PostService
 import Server.skcoding.service.UserService
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
@@ -39,4 +41,6 @@ val mainModule = module {
     }
 
     single { UserService(get()) }
+    single { FollowService(get()) }
+    single { PostService(get()) }
 }
