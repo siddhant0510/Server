@@ -5,6 +5,7 @@ import Server.skcoding.data.repository.post.PostRepository
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.routes.createPostRoute
 import Server.skcoding.routes.followUser
+import Server.skcoding.routes.getPostsForFollows
 import Server.skcoding.routes.loginUser
 import Server.skcoding.routes.unfollowUser
 import Server.skcoding.routes.userRoutes
@@ -42,5 +43,6 @@ fun Application.configureRouting() {
 
         // Post routes
         createPostRoute(postService, userService)
+        getPostsForFollows(postService, userService)
     }
 }
