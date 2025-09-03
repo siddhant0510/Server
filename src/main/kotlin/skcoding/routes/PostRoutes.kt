@@ -3,6 +3,7 @@ package Server.skcoding.routes
 import Server.skcoding.data.models.Post
 import Server.skcoding.data.repository.post.PostRepository
 import Server.skcoding.data.requests.CreatePostRequest
+import Server.skcoding.data.requests.DeletePostRequest
 import Server.skcoding.data.responses.BasicApiResponse
 import Server.skcoding.plugins.email
 import Server.skcoding.service.PostService
@@ -18,6 +19,7 @@ import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.application
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import org.koin.ktor.ext.inject
@@ -82,6 +84,31 @@ fun Route.getPostsForFollows(
                 val posts = postService.getPostsForFollows(userId, page, pageSize)
                 call.respond(HttpStatusCode.OK, posts)
             }
+        }
+    }
+}
+
+fun Route.deletePost(
+    postService: PostService,
+    userService: UserService
+) {
+    delete("/api/post/delete"){
+        val request = call.receiveNullable<DeletePostRequest>() ?: run {
+            call.respond(HttpStatusCode.BadRequest)
+            return@delete
+        }
+        val post = postService.getPost(request.postId)
+        if(post == null) {
+            call.respond(HttpStatusCode.NotFound)
+            return@delete
+        }
+        ifEmailBelongsToUser(
+            call = call,
+            userId = post.userId,
+            validateEmail = { email, userId -> userService.doesEmailBelongToUserId(email, userId) }
+        ) {
+            postService.deletePost(request.postId)
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
