@@ -16,7 +16,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.*
 
-fun Route.userRoutes(userService: UserService) {
+fun Route.createUser(userService: UserService) {
     // val authService: AuthService by application.inject()
         post("/api/user/create") {
             val request = call.receiveNullable<CreateAccountRequest>() ?: run {

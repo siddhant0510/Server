@@ -2,11 +2,14 @@ package Server.skcoding.di
 
 import Server.skcoding.data.repository.follow.FollowRepository
 import Server.skcoding.data.repository.follow.FollowRepositoryImpl
+import Server.skcoding.data.repository.likes.LikesRepository
+import Server.skcoding.data.repository.likes.LikesRepositoryImpl
 import Server.skcoding.data.repository.post.PostRepository
 import Server.skcoding.data.repository.post.PostRepositoryImpl
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.repository.user.UserRepositoryImpl
 import Server.skcoding.service.FollowService
+import Server.skcoding.service.LikeService
 import Server.skcoding.service.PostService
 import Server.skcoding.service.UserService
 import org.koin.dsl.module
@@ -39,8 +42,12 @@ val mainModule = module {
     single<PostRepository> {
         PostRepositoryImpl(get())
     }
+    single<LikesRepository> {
+        LikesRepositoryImpl(get())
+    }
 
     single { UserService(get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
+    single { LikeService(get()) }
 }
