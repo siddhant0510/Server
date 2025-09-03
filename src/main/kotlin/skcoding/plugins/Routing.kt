@@ -1,5 +1,6 @@
 package Server.skcoding.plugins
 
+import Server.skcoding.routes.createComment
 import Server.skcoding.routes.createPost
 import Server.skcoding.routes.deletePost
 import Server.skcoding.routes.followUser
@@ -8,7 +9,10 @@ import Server.skcoding.routes.likeParent
 import Server.skcoding.routes.loginUser
 import Server.skcoding.routes.unfollowUser
 import Server.skcoding.routes.createUser
+import Server.skcoding.routes.deleteComment
+import Server.skcoding.routes.getCommentsForPost
 import Server.skcoding.routes.unlikeParent
+import Server.skcoding.service.CommentService
 import Server.skcoding.service.FollowService
 import Server.skcoding.service.LikeService
 import Server.skcoding.service.PostService
@@ -23,6 +27,7 @@ fun Application.configureRouting() {
     val followService: FollowService by inject()
     val postService: PostService by inject()
     val likeService: LikeService by inject()
+    val commentService: CommentService by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").getString()
     val jwtAudience = environment.config.property("jwt.audience").getString()
@@ -44,10 +49,15 @@ fun Application.configureRouting() {
         // Post routes
         createPost(postService, userService)
         getPostsForFollows(postService, userService)
-        deletePost(postService, userService)
+        deletePost(postService, userService, likeService)
 
         // Like routes
         likeParent(likeService, userService)
         unlikeParent(likeService, userService)
+
+        // Comment routes
+        createComment(commentService,  userService)
+        deleteComment(commentService, userService, likeService)
+        getCommentsForPost(commentService)
     }
 }
