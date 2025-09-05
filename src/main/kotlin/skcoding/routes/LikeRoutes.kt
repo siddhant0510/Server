@@ -2,8 +2,9 @@ package Server.skcoding.routes
 
 import Server.skcoding.data.requests.LikeUpdateRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.data.util.ParentType
+import Server.skcoding.service.ActivityService
 import Server.skcoding.service.LikeService
-import Server.skcoding.service.UserService
 import Server.skcoding.util.ApiResponseMessages
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
@@ -15,6 +16,7 @@ import io.ktor.server.routing.post
 
 fun Route.likeParent(
     likeService: LikeService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/like") {
@@ -22,8 +24,14 @@ fun Route.likeParent(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-            val likeSuccessful = likeService.likeParent(call.userId, request.parentId)
+            val userId = call.userId
+            val likeSuccessful = likeService.likeParent(call.userId, request.parentId, request.parentType)
             if(likeSuccessful) {
+                activityService.addLikeActivity(
+                    byUserId = userId,
+                    parentType = ParentType.fromType(request.parentType),
+                    parentId = request.parentId
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

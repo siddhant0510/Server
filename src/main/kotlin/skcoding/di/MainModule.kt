@@ -1,5 +1,7 @@
 package Server.skcoding.di
 
+import Server.skcoding.data.repository.activity.ActivityRepository
+import Server.skcoding.data.repository.activity.ActivityRepositoryImpl
 import Server.skcoding.data.repository.comment.CommentRepository
 import Server.skcoding.data.repository.comment.CommentRepositoryImpl
 import Server.skcoding.data.repository.follow.FollowRepository
@@ -10,6 +12,7 @@ import Server.skcoding.data.repository.post.PostRepository
 import Server.skcoding.data.repository.post.PostRepositoryImpl
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.repository.user.UserRepositoryImpl
+import Server.skcoding.service.ActivityService
 import Server.skcoding.service.CommentService
 import Server.skcoding.service.FollowService
 import Server.skcoding.service.LikeService
@@ -51,10 +54,14 @@ val mainModule = module {
     single<CommentRepository>{
         CommentRepositoryImpl(get())
     }
+    single<ActivityRepository> {
+        ActivityRepositoryImpl(get())
+    }
 
     single { UserService(get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
     single { LikeService(get()) }
     single { CommentService(get()) }
+    single { ActivityService(get(), get(), get()) }
 }

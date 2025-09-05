@@ -4,6 +4,7 @@ import Server.skcoding.data.models.Like
 import Server.skcoding.data.requests.CreatePostRequest
 import Server.skcoding.data.requests.DeletePostRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.service.CommentService
 import Server.skcoding.service.LikeService
 import Server.skcoding.service.PostService
 import Server.skcoding.service.UserService
@@ -67,7 +68,8 @@ fun Route.getPostsForFollows(
 
 fun Route.deletePost(
     postService: PostService,
-    likeService: LikeService
+    likeService: LikeService,
+    commentService: CommentService
 ) {
     authenticate {
         delete("/api/post/delete"){
@@ -83,6 +85,7 @@ fun Route.deletePost(
             if(post.userId == call.userId) {
                 postService.deletePost(request.postId)
                 likeService.deleteLikesForParent(request.postId)
+                commentService.deleteCommentsForPost(request.postId)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.Unauthorized)

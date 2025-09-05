@@ -12,11 +12,11 @@ class LikesRepositoryImpl(
 
     private val likes = db.getCollection<Like>()
     private val users = db.getCollection<User>()
-    override suspend fun likeParent(userId: String, parentId: String): Boolean {
+    override suspend fun likeParent(userId: String, parentId: String, parentType: Int): Boolean {
 
         val doesUserExist = users.findOneById(userId) != null
         if(doesUserExist) {
-            likes.insertOne(Like(userId, parentId))
+            likes.insertOne(Like(userId, parentId, parentType))
             return true
         } else {
             return false

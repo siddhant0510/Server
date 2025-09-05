@@ -3,6 +3,7 @@ package Server.skcoding.routes
 import Server.skcoding.data.requests.CreateCommentRequest
 import Server.skcoding.data.requests.DeleteCommentRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.service.ActivityService
 import Server.skcoding.service.CommentService
 import Server.skcoding.service.LikeService
 import Server.skcoding.service.UserService
@@ -17,6 +18,7 @@ import io.ktor.server.routing.*
 
 fun Route.createComment(
     commentService: CommentService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/comment/create") {
@@ -24,7 +26,8 @@ fun Route.createComment(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-            when(commentService.createComment(request, call.userId)) {
+            val userId = call.userId
+            when(commentService.createComment(request, userId)) {
                 is CommentService.ValidationEvent.ErrorFieldEmpty -> {
                     call.respond(
                         HttpStatusCode.OK,
@@ -44,6 +47,10 @@ fun Route.createComment(
                     )
                 }
                 is CommentService.ValidationEvent.Success -> {
+                    activityService.addCommentActivity(
+                        byUserId = userId,
+                        postId = request.postId,
+                    )
                     call.respond(
                         HttpStatusCode.OK,
                         BasicApiResponse(

@@ -28,12 +28,19 @@ class CommentService(
         return ValidationEvent.Success
     }
 
+    suspend fun deleteCommentsForPost(postId: String) {
+        val comments = repository.getCommentsForPost(postId)
+        comments.forEach { comments ->
+            repository.deleteComment(comments.id)
+        }
+    }
+
     suspend fun deleteComment(commentId: String): Boolean {
         return repository.deleteComment(commentId)
     }
 
-    suspend fun getCommentsForPost(postId: String): List<Comment> {
-        return repository.getCommentsForPost(postId)
+    suspend fun getCommentsForPost(postId: String) {
+        repository.deleteCommentsFromPost(postId)
     }
 
     suspend fun getCommentById(commentId: String): Comment? {

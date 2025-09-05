@@ -1,8 +1,11 @@
 package Server.skcoding.routes
 
+import Server.skcoding.data.models.Activity
 import Server.skcoding.data.repository.follow.FollowRepository
 import Server.skcoding.data.requests.FollowUpdateRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.data.util.ActivityType
+import Server.skcoding.service.ActivityService
 import Server.skcoding.service.FollowService
 import Server.skcoding.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.http.HttpStatusCode
@@ -16,7 +19,10 @@ import io.ktor.server.routing.post
 import org.koin.ktor.ext.inject
 import kotlin.getValue
 
-fun Route.followUser(followService: FollowService) {
+fun Route.followUser(
+    followService: FollowService,
+    activityService: ActivityService
+) {
 
     authenticate {
         post("/api/following/follow") {
@@ -26,6 +32,15 @@ fun Route.followUser(followService: FollowService) {
             }
             val didUserExist = followService.followUserIfExists(request, call.userId)
             if(didUserExist) {
+                activityService.createActivity(
+                    Activity(
+                        timestamp = System.currentTimeMillis(),
+                        byUserId = call.userId,
+                        toUserId = request.followedUserId,
+                        type = ActivityType.FollowedUser.type,
+                        parentId = ""
+                    )
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(
