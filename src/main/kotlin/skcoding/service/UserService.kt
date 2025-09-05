@@ -1,15 +1,18 @@
 package Server.skcoding.service
 
 import Server.skcoding.data.models.User
+import Server.skcoding.data.repository.follow.FollowRepository
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.requests.CreateAccountRequest
 import Server.skcoding.data.requests.LoginRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.data.responses.UserResponseItem
 import Server.skcoding.util.ApiResponseMessages.FIELDS_BLANK
 import io.ktor.server.response.respond
 
 class UserService(
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val followRepository: FollowRepository
 ) {
     suspend fun doesUserWithEmailExist(email: String): Boolean {
         return repository.getUserByEmail(email) != null
@@ -27,11 +30,19 @@ class UserService(
         return enteredPassword == actualPassword
     }
 
-    suspend fun doesPasswordMatchForUser(request: LoginRequest): Boolean {
-        return repository.doesPasswordForUserMatch(
-            email = request.email,
-            enteredPassword = request.password
-        )
+    suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
+        val users = repository.searchForUsers(query)
+        val followsByUser = followRepository.getFollowsByUser(userId)
+        return users.map { user ->
+            val isFollowing = followsByUser.find { it.followedUserId == user.id} != null
+            UserResponseItem(
+                username = user.username,
+                profilePictureUrl = user.profileImageUrl,
+                bio = user.bio,
+                isFollowing = isFollowing
+            )
+
+        }
     }
 
     suspend fun createUser(request: CreateAccountRequest) {
@@ -48,7 +59,7 @@ class UserService(
             )
         )
     }
-    fun validateCreateAccountRequest(request: CreateAccountRequest): ValidationEvent {
+    fun validateCreateAccountRequest(request: CreateAccountRequest): UserService.ValidationEvent {
         if(request.email.isBlank() || request.password.isBlank() || request.username.isBlank()) {
             return ValidationEvent.ErrorFieldEmpty
         }

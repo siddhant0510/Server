@@ -12,6 +12,7 @@ import Server.skcoding.routes.createUser
 import Server.skcoding.routes.deleteComment
 import Server.skcoding.routes.getActivities
 import Server.skcoding.routes.getCommentsForPost
+import Server.skcoding.routes.searchUser
 import Server.skcoding.routes.unlikeParent
 import Server.skcoding.service.ActivityService
 import Server.skcoding.service.CommentService
@@ -44,6 +45,7 @@ fun Application.configureRouting() {
             jwtAudience = jwtAudience,
             jwtSecret = jwtSecret
         )
+        searchUser(userService)
 
         // Following routes
         followUser(followService, activityService)

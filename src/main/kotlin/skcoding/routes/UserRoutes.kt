@@ -1,5 +1,6 @@
 package Server.skcoding.routes
 
+import Server.skcoding.data.models.User
 import Server.skcoding.data.requests.CreateAccountRequest
 import Server.skcoding.data.requests.LoginRequest
 import Server.skcoding.data.responses.AuthResponse
@@ -8,9 +9,11 @@ import Server.skcoding.service.UserService
 import Server.skcoding.util.ApiResponseMessages.FIELDS_BLANK
 import Server.skcoding.util.ApiResponseMessages.INVALID_CREDENTIALS
 import Server.skcoding.util.ApiResponseMessages.USER_ALREADY_EXISTS
+import Server.skcoding.util.QueryParams
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -108,7 +111,25 @@ fun Route.loginUser(
     }
 }
 
-
+fun Route.searchUser(userService: UserService) {
+    authenticate {
+        get("/api/user/search") {
+            val query = call.parameters[QueryParams.PARAM_QUERY]
+            if(query == null || query.isBlank()) {
+                call.respond(
+                    HttpStatusCode.OK,
+                    listOf<User>()
+                )
+                return@get
+            }
+            val searchResults = userService.searchForUsers(query, call.userId)
+            call.respond(
+                HttpStatusCode.OK,
+                searchResults
+            )
+        }
+    }
+}
 
 
 
