@@ -12,6 +12,9 @@ data class User(
     val gitHubUrl: String?,
     val instagramUrl: String?,
     val linkedInUrl: String?,
+    val followingCount: Int = 0,
+    val followerCount: Int = 0,
+    val postCount: Int = 0,
     val skills: List<String> = listOf(),
     @BsonId
     val id: String = ObjectId().toString()

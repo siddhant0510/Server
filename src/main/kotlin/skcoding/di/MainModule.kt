@@ -18,6 +18,7 @@ import Server.skcoding.service.FollowService
 import Server.skcoding.service.LikeService
 import Server.skcoding.service.PostService
 import Server.skcoding.service.UserService
+import com.google.gson.Gson
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -64,4 +65,5 @@ val mainModule = module {
     single { LikeService(get()) }
     single { CommentService(get()) }
     single { ActivityService(get(), get(), get()) }
+    single { Gson() }
 }

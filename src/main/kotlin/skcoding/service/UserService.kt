@@ -4,34 +4,58 @@ import Server.skcoding.data.models.User
 import Server.skcoding.data.repository.follow.FollowRepository
 import Server.skcoding.data.repository.user.UserRepository
 import Server.skcoding.data.requests.CreateAccountRequest
-import Server.skcoding.data.requests.LoginRequest
-import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.data.requests.UpdateProfileRequest
+import Server.skcoding.data.responses.ProfileResponse
 import Server.skcoding.data.responses.UserResponseItem
-import Server.skcoding.util.ApiResponseMessages.FIELDS_BLANK
-import io.ktor.server.response.respond
 
 class UserService(
-    private val repository: UserRepository,
+    private val userRepository: UserRepository,
     private val followRepository: FollowRepository
 ) {
     suspend fun doesUserWithEmailExist(email: String): Boolean {
-        return repository.getUserByEmail(email) != null
+        return userRepository.getUserByEmail(email) != null
     }
 
-    suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
-        return repository.doesEmailBelongToUserId(email, userId)
+    suspend fun getUserProfile(userId: String, callerUserId: String) : ProfileResponse? {
+        val user = userRepository.getUserById(userId) ?: return null
+        return  ProfileResponse(
+            username = user.username,
+            bio = user.bio,
+            followerCount = user.followerCount,
+            followingCount = user.followingCount,
+            postCount = user.postCount,
+            profilePictureUrl = user.profileImageUrl,
+            topSkillUrls = user.skills,
+            gitHubUrl = user.gitHubUrl,
+            instagramUrl = user.instagramUrl,
+            linkedInUrl = user.linkedInUrl,
+            isOwnProfile = userId == callerUserId,
+            isFollowing = if(userId != callerUserId) {
+                followRepository.doesUserFollow(callerUserId, userId)
+            } else {
+                false
+            }
+        )
     }
 
     suspend fun getUserByEmail(email: String): User? {
-        return repository.getUserByEmail(email)
+        return userRepository.getUserByEmail(email)
     }
 
     fun isValidPassword(enteredPassword: String, actualPassword: String): Boolean {
         return enteredPassword == actualPassword
     }
 
+    suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        return userRepository.updateUser(userId, profileImageUrl, updateProfileRequest)
+    }
+
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
-        val users = repository.searchForUsers(query)
+        val users = userRepository.searchForUsers(query)
         val followsByUser = followRepository.getFollowsByUser(userId)
         return users.map { user ->
             val isFollowing = followsByUser.find { it.followedUserId == user.id} != null
@@ -46,7 +70,7 @@ class UserService(
     }
 
     suspend fun createUser(request: CreateAccountRequest) {
-        repository.createUser(
+        userRepository.createUser(
             User(
                 email = request.email,
                 username = request.username,
