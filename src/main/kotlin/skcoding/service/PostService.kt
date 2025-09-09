@@ -8,10 +8,10 @@ import Server.skcoding.util.Constants
 class PostService(
     private val repository: PostRepository
 ) {
-    suspend fun createPostIfUserExists(request: CreatePostRequest, userId: String): Boolean {
-        return repository.createPostIfUserExists(
+    suspend fun createPost(request: CreatePostRequest, userId: String, imageUrl: String): Boolean {
+        return repository.createPost(
             Post(
-                imageUrl = "",
+                imageUrl = imageUrl,
                 userId = userId,
                 timestamp = System.currentTimeMillis(),
                 description = request.description

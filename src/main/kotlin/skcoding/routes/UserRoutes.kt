@@ -16,6 +16,7 @@ import Server.skcoding.util.Constants
 import Server.skcoding.util.Constants.BASE_URL
 import Server.skcoding.util.Constants.PROFILE_PICTURE_PATH
 import Server.skcoding.util.QueryParams
+import Server.skcoding.util.save
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.google.gson.Gson
@@ -209,10 +210,7 @@ fun Route.updateUserProfile(userService: UserService) {
                         }
                     }
                     is PartData.FileItem -> {
-                        val fileBytes = partData.streamProvider().readBytes()
-                        val fileExtension  = partData.originalFileName?.takeLastWhile { it != '.'}
-                        fileName = UUID.randomUUID().toString() + "." + fileExtension
-                        File("$PROFILE_PICTURE_PATH$fileName").writeBytes(fileBytes)
+                       fileName =  partData.save(PROFILE_PICTURE_PATH)
                     }
                     is PartData.BinaryChannelItem -> Unit
                     is PartData.BinaryItem -> Unit
