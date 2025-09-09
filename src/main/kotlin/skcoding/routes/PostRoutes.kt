@@ -30,7 +30,6 @@ import java.io.File
 
 fun Route.createPost(
     postService: PostService,
-    userService: UserService
 ) {
     val gson by inject<Gson>()
     authenticate {

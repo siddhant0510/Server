@@ -12,6 +12,7 @@ import Server.skcoding.routes.createUser
 import Server.skcoding.routes.deleteComment
 import Server.skcoding.routes.getActivities
 import Server.skcoding.routes.getCommentsForPost
+import Server.skcoding.routes.getLikesForParent
 import Server.skcoding.routes.getUserProfile
 import Server.skcoding.routes.searchUser
 import Server.skcoding.routes.unlikeParent
@@ -70,6 +71,7 @@ fun Application.configureRouting() {
         // Like routes
         likeParent(likeService, activityService)
         unlikeParent(likeService)
+        getLikesForParent(likeService)
 
         // Comment routes
         createComment(commentService, activityService)
