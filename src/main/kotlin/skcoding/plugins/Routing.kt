@@ -1,38 +1,11 @@
 package Server.skcoding.plugins
 
-import Server.skcoding.routes.createComment
-import Server.skcoding.routes.createPost
-import Server.skcoding.routes.deletePost
-import Server.skcoding.routes.followUser
-import Server.skcoding.routes.getPostsForFollows
-import Server.skcoding.routes.likeParent
-import Server.skcoding.routes.loginUser
-import Server.skcoding.routes.unfollowUser
-import Server.skcoding.routes.createUser
-import Server.skcoding.routes.deleteComment
-import Server.skcoding.routes.getActivities
-import Server.skcoding.routes.getCommentsForPost
-import Server.skcoding.routes.getLikesForParent
-import Server.skcoding.routes.getUserProfile
-import Server.skcoding.routes.searchUser
-import Server.skcoding.routes.unlikeParent
-import Server.skcoding.routes.updateUserProfile
-import Server.skcoding.service.ActivityService
-import Server.skcoding.service.CommentService
-import Server.skcoding.service.FollowService
-import Server.skcoding.service.LikeService
-import Server.skcoding.service.PostService
-import Server.skcoding.service.UserService
+import Server.skcoding.routes.*
+import Server.skcoding.service.*
 import io.ktor.server.application.*
-import io.ktor.server.http.content.files
-import io.ktor.server.http.content.resources
-import io.ktor.server.http.content.static
-import io.ktor.server.http.content.staticResources
-import io.ktor.server.http.content.staticRootFolder
+import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import java.io.File
-import kotlin.getValue
 
 fun Application.configureRouting() {
     val userService: UserService by inject()
@@ -47,6 +20,7 @@ fun Application.configureRouting() {
     val jwtSecret = environment.config.property("jwt.secret").getString()
     routing {
         // User routes
+        authenticate()
         createUser(userService)
         loginUser(
             userService,

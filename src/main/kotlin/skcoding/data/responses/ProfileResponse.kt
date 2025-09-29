@@ -7,6 +7,7 @@ data class ProfileResponse(
     val followingCount: Int,
     val postCount: Int,
     val profilePictureUrl: String,
+    val bannerUrl: String,
     val topSkillUrls: List<String>,
     val gitHubUrl: String?,
     val instagramUrl: String?,

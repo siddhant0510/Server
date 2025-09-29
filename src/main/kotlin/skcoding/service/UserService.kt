@@ -25,6 +25,7 @@ class UserService(
             followingCount = user.followingCount,
             postCount = user.postCount,
             profilePictureUrl = user.profileImageUrl,
+            bannerUrl = user.bannerUrl,
             topSkillUrls = user.skills,
             gitHubUrl = user.gitHubUrl,
             instagramUrl = user.instagramUrl,
@@ -48,10 +49,11 @@ class UserService(
 
     suspend fun updateUser(
         userId: String,
-        profileImageUrl: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
         updateProfileRequest: UpdateProfileRequest
     ): Boolean {
-        return userRepository.updateUser(userId, profileImageUrl, updateProfileRequest)
+        return userRepository.updateUser(userId, profileImageUrl, bannerUrl, updateProfileRequest)
     }
 
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
@@ -76,6 +78,7 @@ class UserService(
                 username = request.username,
                 password = request.password,
                 profileImageUrl = "",
+                bannerUrl = "",
                 bio = "",
                 gitHubUrl = null,
                 instagramUrl = null,
