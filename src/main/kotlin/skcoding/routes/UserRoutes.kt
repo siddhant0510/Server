@@ -3,6 +3,7 @@ package Server.skcoding.routes
 import Server.skcoding.data.models.User
 import Server.skcoding.data.requests.UpdateProfileRequest
 import Server.skcoding.data.responses.BasicApiResponse
+import Server.skcoding.data.responses.UserResponseItem
 import Server.skcoding.service.PostService
 import Server.skcoding.service.UserService
 import Server.skcoding.util.ApiResponseMessages
@@ -30,7 +31,7 @@ fun Route.searchUser(userService: UserService) {
             if(query == null || query.isBlank()) {
                 call.respond(
                     HttpStatusCode.OK,
-                    listOf<User>()
+                    listOf<UserResponseItem>()
                 )
                 return@get
             }
@@ -86,7 +87,10 @@ fun Route.getUserProfile(userService: UserService) {
             }
             call.respond(
                 HttpStatusCode.OK,
-                profileResponse
+                BasicApiResponse(
+                    successful = true,
+                    data = profileResponse
+                )
             )
         }
     }

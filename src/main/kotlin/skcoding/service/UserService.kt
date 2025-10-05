@@ -19,6 +19,7 @@ class UserService(
     suspend fun getUserProfile(userId: String, callerUserId: String) : ProfileResponse? {
         val user = userRepository.getUserById(userId) ?: return null
         return  ProfileResponse(
+            userId = userId,
             username = user.username,
             bio = user.bio,
             followerCount = user.followerCount,
@@ -62,6 +63,7 @@ class UserService(
         return users.map { user ->
             val isFollowing = followsByUser.find { it.followedUserId == user.id} != null
             UserResponseItem(
+                userId = user.id,
                 username = user.username,
                 profilePictureUrl = user.profileImageUrl,
                 bio = user.bio,
